@@ -39,19 +39,23 @@
 
 <body>
 
-<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2018</h1>
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
 <h1 align="middle">Project 2: Mesh Edit</h1>
 <h2 align="middle">Annie Lin and Vivian Liu</h2>
 
 <br><br>
 
-<div>
+<div align="middle">
+    <img src="images/cow.png" align="middle" width="100%">
+</div>
+
+<br><br>
+
 
 <h2 align="middle">Overview</h2>
 <p>In this assignment, we implemented a mesh editor that can handle a variety of mesh operations. We first started by building Bezier curves using de Casteljau’s algorithm then we extended the use of the algorithm to Bezier surfaces. We then worked with manipulating triangle meshes through the half-edge data structure, and implemented area-weighted vertex normals which would allow for smoother shading and implemented operations such as edge flipping and edge splitting. Edge flipping and edge splitting would come in handy for our implementation of loop subdivision, which is a mesh upsampling method which would allow for higher-resolution meshes. At the end, we now have a working mesh editor that is capable of area-weight vertex normals, flipping edges, splitting edges, and upsampling the current mesh.</p>
 <p>We learned from this assignment how meshes are handled in 3D modeling and animation software programs such as Maya and Blender, and what truly goes on behind the scenes when we choose the number of subdivisions for our meshes, what happens when we delete/add an edge, and the underlying data structures that might have been used for those software programs.</p>
 <br>
-
 
 <h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
 
@@ -159,7 +163,7 @@
 <p>Similar to Bezier curves, de Casteljau’s algorithm extends to Bezier surfaces by working with an n x n grid of control point vectors through a series of recursive steps. Instead of just working with one parameter t, this time we work with parameters u and v. The intuition is that each row in the n x n grid gives us a set of control points that defines a Bezier curve at parameter u. Applying de Casteljau’s algorithm to each row in the grid gives us a total of n Bezier curves, and likewise, a vector of n evaluated points, which creates a “moving curve” in 2D space. We can then use 1D de Casteljau to evaluate the Bezier curve provided by this “moving curve” at parameter v and return a point on the Bezier surface in 3D space.</p>
 <p>To apply de Casteljau algorithm to Bezier surfaces, we implemented three functions: evaluateStep(...), evaluate1D(...), and evaluate(...).</p>
 <p>We used the same logic from Task 1 in our implementation of evaluateStep(...), but since we are working with points in 3D spaces, we stored our intermediate control points in a vector of Vector3D objects. Within evaluate1D(...), we continuously called evaluateStep using a while loop, which terminated once the evaluateStep returned a vector of size 1. Then, we retrieved the Vector3D element, by returning the element at index 0 in the vector returned by evaluateStep.</p>
-<p>On the highest level, our evaluate(...) method implementation begins with initializing a standard vector of Vector3D objects to contain the moving curve points, i.e. the set of single points evaluated at each Bezier curve given by each row within our nxn grid of control points. Then, we iterated through the rows of control points using a for loop from 0 to n. With each iteration, we called evaluate1D with inputs being the vector of control points given by row i and parameter u. This gave us the single final, single point P_i for the i-th row, which we stored in the vector of moving curve points created earlier. Lastly, we evaluated evaluate1D with the vector of moving curve points and parameter v as inputs, which returned thr surface point.</p>
+<p>On the highest level, our evaluate(...) method implementation begins with initializing a standard vector of Vector3D objects to contain the moving curve points, i.e. the set of single points evaluated at each Bezier curve given by each row within our nxn grid of control points. Then, we iterated through the rows of control points using a for loop from 0 to n. With each iteration, we called evaluate1D with inputs being the vector of control points given by row i and parameter u. This gave us the single final, single point P_i for the i-th row, which we stored in the vector of moving curve points created earlier. Lastly, we evaluated evaluate1D with the vector of moving curve points and parameter v as inputs, which returned the surface point.</p>
 
 <br>
 
@@ -363,11 +367,11 @@
         <tr align="center">
             <td>
                 <img src="images/pre_multi_edge_flip.png" align="middle" width="400px"/>
-                <figcaption>Half mesh before edge split</figcaption>
+                <figcaption>Half mesh before edge splits and flips</figcaption>
             </td>
             <td>
                 <img src="images/split_flip.png" align="middle" width="400px"/>
-                <figcaption>Half mesh after edge split</figcaption>
+                <figcaption>Half mesh after edge splits and flips</figcaption>
             </td>
         </tr>
     </table>
@@ -450,7 +454,7 @@ Our loop subdivision consisted of three parts:
                 </td>
                 <td>
                     <img src="images/preprocessed_torus2.png" align="middle" width="300px"/>
-                    <figcaption>Upsampled preprocessed torus mesh 2x</figcaption>
+                    <figcaption>Upsampled preprocessed torus mesh 3x</figcaption>
                 </td>
             </tr>
         </table>
